@@ -56,30 +56,30 @@ class GithubUserProviderTest extends TestCase
 
         // $client->method('get')->willReturn($response); // redéfinition de la méthode get('https://api.github.com/user?access_token='.$username);
         // en rajoutant une expectation, et donc une assertion
-        $client
+        $this->client
             ->expects($this->once()) // Nous nous attendons à ce que la méthode get soit appelée une fois
             ->method('get')
-            ->willReturn($response)
+            ->willReturn($this->response)
             ;
 
         // $response->method('getBody')->willReturn($streamedResponse);
         // en rajoutant une expectation, et donc une assertion
-        $response
+        $this->response
             ->expects($this->once()) // Nous nous attendons à ce que la méthode getBody soit appelée une fois
             ->method('getBody')
-            ->willReturn($streamedResponse);
+            ->willReturn($this->streamedResponse);
 
         // on imagine que userData renvoie bien un array comme-ci dessous
         $userData = ['login' => 'a login', 'name' => 'user name', 'email' => 'adress@mail.com', 'avatar_url' => 'url to the avatar', 'html_url' => 'url to profile'];
         
         // $serializer->method('deserialize')->willReturn($userData);
         // en rajoutant une expectation, et donc une assertion
-        $serializer
+        $this->serializer
             ->expects($this->once()) // Nous nous attendons à ce que la méthode deserialize soit appelée une fois
             ->method('deserialize')
             ->willReturn($userData);
 
-        $githubUserProvider = new GithubUserProvider($client, $serializer);
+        $githubUserProvider = new GithubUserProvider($this->client, $this->serializer);
 
         $user = $githubUserProvider->loadUserByUsername('an-access-token');
 
@@ -92,7 +92,10 @@ class GithubUserProviderTest extends TestCase
 
     public function testloadUserByUsernameWithEmptyUserData()
     {
-
+        $client = $this->client;
+        $response = $this->response;
+        $streamedResponse = $this->streamedResponse;
+        $serializer = $this->serializer;
         // $client->method('get')->willReturn($response); // redéfinition de la méthode get('https://api.github.com/user?access_token='.$username);
         // en rajoutant une expectation, et donc une assertion
         $client
